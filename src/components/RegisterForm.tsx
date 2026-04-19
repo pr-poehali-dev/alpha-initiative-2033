@@ -1,12 +1,34 @@
 import { useState } from "react";
 
+const API_URL = "https://functions.poehali.dev/3774c070-b3a9-42fc-8655-950facd43aea";
+
 export default function RegisterForm() {
   const [form, setForm] = useState({ name: "", email: "", city: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Что-то пошло не так");
+      } else {
+        setSubmitted(true);
+      }
+    } catch {
+      setError("Ошибка соединения. Попробуй ещё раз.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,11 +99,15 @@ export default function RegisterForm() {
                   className="w-full bg-neutral-900 border border-neutral-700 text-white px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition-colors placeholder:text-neutral-600"
                 />
               </div>
+              {error && (
+                <p className="text-red-400 text-sm">{error}</p>
+              )}
               <button
                 type="submit"
-                className="bg-orange-500 text-white px-6 py-4 text-sm uppercase tracking-wide font-semibold hover:bg-orange-400 transition-colors duration-300 cursor-pointer mt-2"
+                disabled={loading}
+                className="bg-orange-500 text-white px-6 py-4 text-sm uppercase tracking-wide font-semibold hover:bg-orange-400 transition-colors duration-300 cursor-pointer mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Получить ранний доступ
+                {loading ? "Отправляем..." : "Получить ранний доступ"}
               </button>
             </form>
           )}

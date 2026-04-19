@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Missing email",
+      "method": "POST",
+      "path": "/",
+      "body": {"name": "Без Email"},
+      "expectedStatus": 400
+    },
+    {
+      "name": "Register new user",
+      "method": "POST",
+      "path": "/",
+      "body": {"name": "Тест Тестов", "email": "test_runmap_777@example.com", "city": "Москва"},
+      "expectedStatus": 200
+    },
+    {
+      "name": "Duplicate email",
+      "method": "POST",
+      "path": "/",
+      "body": {"name": "Тест Тестов", "email": "test_runmap_777@example.com", "city": "Москва"},
+      "expectedStatus": 409
+    }
+  ]
+}
